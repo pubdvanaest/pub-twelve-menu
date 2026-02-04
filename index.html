@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pub Twelve - Karta Pića</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            width: 40px;
+            height: 28px;
+            border: 2px solid #ff8c42;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .lang-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ff8c42;
+        }
+        .lang-btn.active {
+            background: #ff8c42;
+            box-shadow: 0 0 20px #ff8c42;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #ff8c42;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #000;
+            box-shadow: 0 5px 20px rgba(255, 140, 66, 0.5);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.7);
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(255, 140, 66, 0.3);
+            border: 2px solid #ff8c42;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #ff8c42;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+        }
+        .subtitle {
+            font-size: 18px;
+            color: #fff;
+            font-style: italic;
+        }
+        .promo-section {
+            background: linear-gradient(135deg, #ff8c42 0%, #ffa35c 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(255, 140, 66, 0.4);
+        }
+        .promo-title {
+            font-size: 28px;
+            color: #000;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .promo-items {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .admin-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .admin-btn {
+            background: #ff8c42;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        .admin-btn:hover {
+            background: #ffa35c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.5);
+        }
+        .admin-panel {
+            display: none;
+            background: rgba(255, 140, 66, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #ff8c42;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        .add-drink-form {
+            display: grid;
+            gap: 15px;
+        }
+        .form-group {
+            display: grid;
+            gap: 8px;
+        }
+        .form-group label {
+            color: #ff8c42;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ff8c42;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-size: 16px;
+        }
+        .form-group input::placeholder {
+            color: #999;
+        }
+        .add-btn {
+            background: #ff8c42;
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .add-btn:hover {
+            background: #ffa35c;
+        }
+        .category {
+            margin-bottom: 40px;
+        }
+        .category-title {
+            font-size: 32px;
+            color: #ff8c42;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #ff8c42;
+            padding-bottom: 10px;
+        }
+        .drink-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 140, 66, 0.2);
+            transition: all 0.3s;
+        }
+        .drink-item:hover {
+            background: rgba(255, 140, 66, 0.1);
+            padding-left: 10px;
+        }
+        .drink-info {
+            flex: 1;
+        }
+        .drink-name {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .drink-description {
+            font-size: 14px;
+            color: #ccc;
+            font-style: italic;
+        }
+        .drink-price {
+            font-size: 24px;
+            color: #ff8c42;
+            font-weight: bold;
+            margin-left: 20px;
+        }
+        .promo-badge {
+            background: #ff8c42;
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 140, 66, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 140, 66, 0.9);
+            }
+        }
+        .delete-btn {
+            background: #d32f2f;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+            display: none;
+        }
+        .admin-panel.active ~ .menu-content .delete-btn,
+        .admin-panel.active ~ .promo-section .delete-btn {
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ff8c42;
+            color: #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <button class="lang-btn active" onclick="changeLanguage('sr')" title="Srpski">🇷🇸</button>
+        <button class="lang-btn" onclick="changeLanguage('en')" title="English">🇬🇧</button>
+        <button class="lang-btn" onclick="changeLanguage('hu')" title="Magyar">🇭🇺</button>
+    </div>
+
+    <button class="back-to-top" onclick="scrollToTop()" title="Nazad na vrh">↑</button>
+
+    <div class="container" id="top">
+        <div class="header">
+            <div class="logo">
+                <img src="logo.png" alt="Pub Twelve">
+            </div>
+            <div class="subtitle" data-lang="sr">Karta Pića</div>
+            <div class="subtitle" data-lang="en" style="display:none">Drinks Menu</div>
+            <div class="subtitle" data-lang="hu" style="display:none">Itallap</div>
+        </div>
+
+        <div class="admin-toggle">
+            <button class="admin-btn" onclick="toggleAdmin()">
+                <span data-lang="sr">Admin Pristup</span>
+                <span data-lang="en" style="display:none">Admin Access</span>
+                <span data-lang="hu" style="display:none">Admin Hozzáférés</span>
+            </button>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <h3 style="color: #ff8c42; margin-bottom: 15px;">
+                <span data-lang="sr">Dodaj Novo Piće</span>
+                <span data-lang="en" style="display:none">Add New Drink</span>
+                <span data-lang="hu" style="display:none">Új Ital Hozzáadása</span>
+            </h3>
+            <div class="add-drink-form">
+                <div class="form-group">
+                    <label>
+                        <span data-lang="sr">Kategorija</span>
+                        <span data-lang="en" style="display:none">Category</span>
+                        <span data-lang="hu" style="display:none">Kategória</span>
+                    </label>
+                    <select id="categorySelect">
+                        <option value="Pivo">Pivo / Beer / Sör</option>
+                        <option value="Vino">Vino / Wine / Bor</option>
+                        <option value="Žestoka">Žestoka Pića / Spirits / Szeszes Italok</option>
+                        <option value="Kokteli">Kokteli / Cocktails / Koktélok</option>
+                        <option value="Bezalkoholna">Bezalkoholna / Soft Drinks / Üdítők</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span data-lang="sr">Naziv pića</span>
+                        <span data-lang="en" style="display:none">Drink name</span>
+                        <span data-lang="hu" style="display:none">Ital neve</span>
+                    </label>
+                    <input type="text" id="drinkName" placeholder="Npr. Jelen Pivo">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span data-lang="sr">Opis (litreža, opciono)</span>
+                        <span data-lang="en" style="display:none">Description (volume, optional)</span>
+                        <span data-lang="hu" style="display:none">Leírás (űrtartalom, opcionális)</span>
+                    </label>
+                    <input type="text" id="drinkDesc" placeholder="0.5l">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span data-lang="sr">Cena (RSD)</span>
+                        <span data-lang="en" style="display:none">Price (RSD)</span>
+                        <span data-lang="hu" style="display:none">Ár (RSD)</span>
+                    </label>
+                    <input type="number" id="price" placeholder="350">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <span data-lang="sr">Akcija?</span>
+                        <span data-lang="en" style="display:none">On Sale?</span>
+                        <span data-lang="hu" style="display:none">Akció?</span>
+                    </label>
+                    <select id="promo">
+                        <option value="false">Ne / No / Nem</option>
+                        <option value="true">Da / Yes / Igen</option>
+                    </select>
+                </div>
+                <button class="add-btn" onclick="addDrink()">
+                    <span data-lang="sr">Dodaj Piće</span>
+                    <span data-lang="en" style="display:none">Add Drink</span>
+                    <span data-lang="hu" style="display:none">Ital Hozzáadása</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="promo-section" id="promoSection" style="display:none">
+            <div class="promo-title">
+                <span data-lang="sr">🔥 Akcije 🔥</span>
+                <span data-lang="en" style="display:none">🔥 Special Offers 🔥</span>
+                <span data-lang="hu" style="display:none">🔥 Akciók 🔥</span>
+            </div>
+            <div class="promo-items" id="promoItems"></div>
+        </div>
+
+        <div class="menu-content" id="menuContent"></div>
+
+        <div class="footer">
+            <p>Pub Twelve | Prijatno! | Enjoy! | Jó étvágyat!</p>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = 'sr';
+        let drinks = JSON.parse(localStorage.getItem('pubTwelveDrinks')) || [
+            // Pivo
+            {category: 'Pivo', name: 'Jelen', description: '0.5l', price: 320, promo: false},
+            {category: 'Pivo', name: 'Zaječarsko', description: '0.5l', price: 300, promo: true},
+            {category: 'Pivo', name: 'Lav', description: '0.5l', price: 320, promo: false},
+            {category: 'Pivo', name: 'Heineken', description: '0.33l', price: 350, promo: false},
+            {category: 'Pivo', name: 'Corona', description: '0.33l', price: 400, promo: false},
+            // Vino
+            {category: 'Vino', name: 'Belo Vino', description: '0.2l', price: 350, promo: false},
+            {category: 'Vino', name: 'Crno Vino', description: '0.2l', price: 350, promo: false},
+            {category: 'Vino', name: 'Rose Vino', description: '0.2l', price: 350, promo: false},
+            {category: 'Vino', name: 'Chardonay', description: '0.75l', price: 2500, promo: false},
+            // Žestoka
+            {category: 'Žestoka', name: 'Rakija', description: '0.05l', price: 200, promo: false},
+            {category: 'Žestoka', name: 'Votka', description: '0.05l', price: 220, promo: false},
+            {category: 'Žestoka', name: 'Viski', description: '0.05l', price: 350, promo: false},
+            {category: 'Žestoka', name: 'Džin', description: '0.05l', price: 300, promo: false},
+            {category: 'Žestoka', name: 'Tequila', description: '0.05l', price: 350, promo: true},
+            // Kokteli
+            {category: 'Kokteli', name: 'Mojito', description: '', price: 600, promo: false},
+            {category: 'Kokteli', name: 'Cuba Libre', description: '', price: 550, promo: false},
+            {category: 'Kokteli', name: 'Sex on the Beach', description: '', price: 650, promo: false},
+            {category: 'Kokteli', name: 'Margarita', description: '', price: 700, promo: true},
+            // Bezalkoholna
+            {category: 'Bezalkoholna', name: 'Coca Cola', description: '0.33l', price: 180, promo: false},
+            {category: 'Bezalkoholna', name: 'Fanta', description: '0.33l', price: 180, promo: false},
+            {category: 'Bezalkoholna', name: 'Sprite', description: '0.33l', price: 180, promo: false},
+            {category: 'Bezalkoholna', name: 'Cedevita', description: '0.3l', price: 150, promo: false},
+            {category: 'Bezalkoholna', name: 'Rosa', description: '0.33l', price: 120, promo: false}
+        ];
+
+        const categoryNames = {
+            sr: {
+                'Pivo': 'Pivo',
+                'Vino': 'Vino',
+                'Žestoka': 'Žestoka Pića',
+                'Kokteli': 'Kokteli',
+                'Bezalkoholna': 'Bezalkoholna Pića'
+            },
+            en: {
+                'Pivo': 'Beer',
+                'Vino': 'Wine',
+                'Žestoka': 'Spirits',
+                'Kokteli': 'Cocktails',
+                'Bezalkoholna': 'Soft Drinks'
+            },
+            hu: {
+                'Pivo': 'Sör',
+                'Vino': 'Bor',
+                'Žestoka': 'Szeszes Italok',
+                'Kokteli': 'Koktélok',
+                'Bezalkoholna': 'Üdítők'
+            }
+        };
+
+        const promoText = {
+            sr: 'Akcija',
+            en: 'Sale',
+            hu: 'Akció'
+        };
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                el.style.display = el.getAttribute('data-lang') === lang ? '' : 'none';
+            });
+            
+            renderMenu();
+        }
+
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+        }
+
+        function scrollToTop() {
+            document.getElementById('top').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function addDrink() {
+            const category = document.getElementById('categorySelect').value;
+            const name = document.getElementById('drinkName').value;
+            const description = document.getElementById('drinkDesc').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const promo = document.getElementById('promo').value === 'true';
+
+            if (!name || !price) {
+                alert('Molimo unesite naziv i cenu! / Please enter name and price! / Kérjük, adja meg a nevet és az árat!');
+                return;
+            }
+
+            const newDrink = {
+                category,
+                name,
+                description,
+                price,
+                promo
+            };
+
+            drinks.push(newDrink);
+            saveDrinks();
+            renderMenu();
+
+            document.getElementById('drinkName').value = '';
+            document.getElementById('drinkDesc').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('promo').value = 'false';
+        }
+
+        function deleteDrink(index) {
+            if (confirm('Da li ste sigurni? / Are you sure? / Biztos benne?')) {
+                drinks.splice(index, 1);
+                saveDrinks();
+                renderMenu();
+            }
+        }
+
+        function saveDrinks() {
+            localStorage.setItem('pubTwelveDrinks', JSON.stringify(drinks));
+        }
+
+        function renderMenu() {
+            const menuContent = document.getElementById('menuContent');
+            const promoItems = document.getElementById('promoItems');
+            const promoSection = document.getElementById('promoSection');
+            const categories = ['Pivo', 'Vino', 'Žestoka', 'Kokteli', 'Bezalkoholna'];
+            
+            // Render promo items
+            const promoDrinks = drinks.filter(d => d.promo);
+            if (promoDrinks.length > 0) {
+                promoSection.style.display = 'block';
+                promoItems.innerHTML = promoDrinks.map((drink, globalIndex) => {
+                    const actualIndex = drinks.indexOf(drink);
+                    return `
+                        <div class="drink-item">
+                            <div class="drink-info">
+                                <div class="drink-name">${drink.name}</div>
+                                ${drink.description ? `<div class="drink-description">${drink.description}</div>` : ''}
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div class="drink-price">${drink.price} RSD</div>
+                                <button class="delete-btn" onclick="deleteDrink(${actualIndex})">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                promoSection.style.display = 'none';
+            }
+            
+            // Render regular menu
+            let html = '';
+            categories.forEach(category => {
+                const categoryDrinks = drinks.filter(d => d.category === category);
+                if (categoryDrinks.length === 0) return;
+                
+                html += `
+                    <div class="category">
+                        <h2 class="category-title">${categoryNames[currentLang][category]}</h2>
+                        ${categoryDrinks.map(drink => {
+                            const actualIndex = drinks.indexOf(drink);
+                            return `
+                                <div class="drink-item">
+                                    <div class="drink-info">
+                                        <div class="drink-name">
+                                            ${drink.name}
+                                            ${drink.promo ? `<span class="promo-badge">${promoText[currentLang]}</span>` : ''}
+                                        </div>
+                                        ${drink.description ? `<div class="drink-description">${drink.description}</div>` : ''}
+                                    </div>
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="drink-price">${drink.price} RSD</div>
+                                        <button class="delete-btn" onclick="deleteDrink(${actualIndex})">✕</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            });
+            
+            menuContent.innerHTML = html;
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>
